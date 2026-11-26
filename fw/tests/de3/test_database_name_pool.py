@@ -15,10 +15,10 @@ spec = importlib.util.spec_from_file_location('name_pool_generator', FW / 'scrip
 generator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(generator)
 
-# Semantic dump of the actual pointer-based tables at the qualified App672 head
-# 96cc712f67b8d1376b1f86b30034da1209f82e0e. Includes every figure EN/CN name,
-# game/group name and field, link target and EN/CN/IT usage note.
-APP672_CONTENT_SHA256 = 'dfd75d895550fa1de930d18de0584b1b31a53fe1ab49460f572b9bf585bf0008'
+# Semantic dump of the actual pointer-based tables at the reviewed zh-Hans
+# catalog head. Includes every figure EN/CN name, game/group name and field,
+# link target and EN/CN/IT usage note.
+CATALOG_CONTENT_SHA256 = '733b45db9ceb55eb603a0c90ba88cabc6ebc0c45b79005dcb291e36b19b6fcbf'
 
 
 class NamePoolTests(unittest.TestCase):
@@ -36,8 +36,8 @@ class NamePoolTests(unittest.TestCase):
             self.assertEqual(built.returncode, 0, built.stdout + built.stderr)
             ran = subprocess.run([str(binary)], capture_output=True, timeout=60)
             self.assertEqual(ran.returncode, 0, ran.stderr.decode(errors='replace'))
-            self.assertEqual(len(ran.stdout), 157131)
-            self.assertEqual(hashlib.sha256(ran.stdout).hexdigest(), APP672_CONTENT_SHA256)
+            self.assertEqual(len(ran.stdout), 159755)
+            self.assertEqual(hashlib.sha256(ran.stdout).hexdigest(), CATALOG_CONTENT_SHA256)
             self.assertEqual({tag: sum(line.startswith(tag + b' ') for line in ran.stdout.splitlines())
                               for tag in (b'A', b'G', b'L')},
                              {b'A': 956, b'G': 83, b'L': 1348})

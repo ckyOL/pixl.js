@@ -108,10 +108,10 @@ const db_notes_t db_usage_notes[] = {
     {"Change background music while riding Vi-O-La/Replenish health and boost max health by 99 once per day", DB_NOTE_CN("每日解锁能量护盾/更改薇奥拉的BGM"), DB_NOTE_IT("")},
     {"Change Vi-O-La's color/Improve Vi-O-La boost regeneration once per day/See total distance traveled on Vi-O-La", DB_NOTE_CN("每日提速薇奥拉加速能量恢复/更改薇奥拉的颜色/查看薇奥拉行驶总里程"), DB_NOTE_IT("")},
     {"View a particular completed cutscene after beating game without needing 100% completion/Hear a random voice line from Sylux", DB_NOTE_CN("提前解锁完整剧情过场/随机播放赛拉克斯语音"), DB_NOTE_IT("")},
-    {"Train the rider as a Figure Player.", DB_NOTE_CN(""), DB_NOTE_IT("")},
+    {"Train the rider as a Figure Player.", DB_NOTE_CN("将骑手作为手办玩家培养。"), DB_NOTE_IT("")},
     {"", DB_NOTE_CN("获取枪皮肤"), DB_NOTE_IT("")},
-    {"Change decoration in Bellabel Park hub", DB_NOTE_CN(""), DB_NOTE_IT("")},
-    {"Unlocks a special mask that Link can wear.", DB_NOTE_CN(""), DB_NOTE_IT("")},
+    {"Change decoration in Bellabel Park hub", DB_NOTE_CN("更改铃铃公园中心装饰"), DB_NOTE_IT("")},
+    {"Unlocks a special mask that Link can wear.", DB_NOTE_CN("解锁林克可佩戴的特殊面具。"), DB_NOTE_IT("")},
 };
 _Static_assert(sizeof(db_usage_notes) / sizeof(*db_usage_notes) <= (uint32_t)(db_note_index_t)-1 + 1, "regenerate db_note_index.h");
 const db_link_t link_list[] = {
