@@ -108,19 +108,39 @@ int main(void) {
         self.assertEqual(run.returncode, 0, run.stderr)
         for name in GENERATED:
             self.assertEqual(files[name], (SRC / 'i18n' / name).read_bytes(), name)
+        header = files['language_list.h'].decode()
+        self.assertIn('#define LANGUAGE_HAS_ZH_HANS 1', header)
+        self.assertIn('X(ZH_HANS, zh_Hans, "简体中文")', header)
+        self.assertIn('zh_Hans.c', files)
+        self.assertEqual(files['zh_Hans.c'], (SRC / 'i18n/zh_Hans.c').read_bytes())
         self.assertNotIn('ja_JP.c', files)
 
     def test_equivalent_override_preserves_saved_de_en_order_and_descriptions(self):
         run, files = self.generator(' en_US , de_DE ')
+        run_ordered, ordered = self.generator('de_DE,en_US')
         self.assertEqual(run.returncode, 0, run.stderr)
+        self.assertEqual(run_ordered.returncode, 0, run_ordered.stderr)
         for name in GENERATED:
-            self.assertEqual(files[name], (SRC / 'i18n' / name).read_bytes(), name)
+            self.assertEqual(files[name], ordered[name], name)
+        header = files['language_list.h'].decode()
+        self.assertLess(header.index('X(DE_DE,'), header.index('X(EN_US,'))
+        self.assertIn('"Deutsch"', header)
+        self.assertIn('"English"', header)
+        self.assertNotIn('ZH_HANS', header)
 
     def test_english_fallback_automatically_added(self):
         run, files = self.generator('de_DE')
+        run_explicit, explicit = self.generator('de_DE,en_US')
         self.assertEqual(run.returncode, 0, run.stderr)
-        self.assertEqual(files['language_list.h'], (SRC / 'i18n/language_list.h').read_bytes())
+        self.assertEqual(run_explicit.returncode, 0, run_explicit.stderr)
+        for name in GENERATED:
+            self.assertEqual(files[name], explicit[name], name)
+        header = files['language_list.h'].decode()
+        self.assertIn('#define LANGUAGE_HAS_EN_US 1', header)
+        self.assertIn('X(EN_US, en_US, "English")', header)
+        self.assertNotIn('ZH_HANS', header)
         self.assertIn('en_US.c', files)
+        self.assertNotIn('zh_Hans.c', files)
 
     def test_new_language_keeps_known_ids_and_has_macro(self):
         run, files = self.generator('ja_JP,de_DE,en_US')

@@ -30,8 +30,10 @@ class ActiveMenuHintTests(unittest.TestCase):
                 hashes[str(original)] = hashlib.sha256(original.read_bytes()).hexdigest()
                 shutil.copyfile(original, work / name)
             (work / 'i18n').mkdir()
-            for name in ['language.c', 'language.h', 'language_list.h', 'string_id.h', 'de_DE.c', 'en_US.c']:
+            for name in ['language.h', 'language_list.h', 'string_id.h']:
                 shutil.copyfile(SRC / 'i18n' / name, work / 'i18n' / name)
+            for source in sorted((SRC / 'i18n').glob('*.c')):
+                shutil.copyfile(source, work / 'i18n' / source.name)
             shutil.copyfile(SRC / 'ntag/ntag_def.h', work / 'ntag_def.h')
             (work / 'mui_common.h').write_text('#pragma once\n#include <stdbool.h>\n#include <stdint.h>\n#include <string.h>\n#include "u8g2.h"\n')
             (work / 'bsp.h').write_text('typedef int bsp_event_t;\n')
@@ -61,7 +63,7 @@ class ActiveMenuHintTests(unittest.TestCase):
                     'u8x8_setup.c', 'u8x8_display.c', 'u8x8_cad.c', 'u8x8_byte.c',
                     'u8x8_gpio.c', 'u8x8_capture.c', 'u8x8_u16toa.c', 'u8x8_u8toa.c']
             sources = [generated] + [work / name for name in files if name.endswith('.c')]
-            sources += [work / 'i18n' / name for name in ['language.c', 'de_DE.c', 'en_US.c']]
+            sources += [work / 'i18n' / source.name for source in sorted((SRC / 'i18n').glob('*.c'))]
             sources += [u8 / name for name in libs]
             command = ['gcc', '-std=c11', '-O1', '-fshort-enums', '-DU8G2_USE_LARGE_FONTS',
                        '-ffunction-sections', '-fdata-sections', '-I', str(work), '-I', str(u8),

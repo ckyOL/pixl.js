@@ -111,7 +111,7 @@ int main(void) {
   assert(link->note_index < sizeof(db_usage_notes)/sizeof(*db_usage_notes));
  assert(!strcmp(db_usage_notes[link->note_index].en,ref->en));
  #ifdef BOARD_LCD
- assert(!*db_usage_notes[link->note_index].cn && !*db_usage_notes[link->note_index].it);
+ assert(!*db_usage_notes[link->note_index].it && !strcmp(db_usage_notes[link->note_index].cn,ref->cn));
  #else
  assert(!strcmp(db_usage_notes[link->note_index].cn,ref->cn) && !strcmp(db_usage_notes[link->note_index].it,ref->it));
  #endif

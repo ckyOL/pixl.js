@@ -74,7 +74,7 @@ class LateSettingsRuntime(unittest.TestCase):
             exe = root / 'test'
             subprocess.run(['gcc', '-std=c11', '-O1', '-g', '-fshort-enums', '-DLCD_SCREEN', *flags,
                             '-I', str(root), '-I', str(SRC), '-I', str(SRC / 'mod/vfs'), '-I', str(SRC / 'mod/ble'),
-                            str(cfile), *(str(SRC / 'i18n' / name) for name in ('language.c', 'de_DE.c', 'en_US.c')),
+                            str(cfile), *(str(path) for path in sorted((SRC / 'i18n').glob('*.c'))),
                             '-o', str(exe)], check=True)
             subprocess.run([exe], check=True)
 

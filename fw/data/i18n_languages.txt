@@ -6,3 +6,4 @@
 # DE1: English retains enum value 1; legacy unsupported locales fall back to DE.
 de_DE,Deutsch
 en_US,English
+zh_Hans,简体中文
