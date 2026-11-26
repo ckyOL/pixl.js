@@ -6,11 +6,12 @@ import subprocess
 import platform
 
 
-# Absolute path to the directories containing the .c files
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Scan the entire application source: the fork keeps its LCD-only
+# German/English/Chinese literals next to the code instead of i18n.csv.
 source_dirs = [
-    os.path.join(current_dir, "../application/src/i18n"),
-    os.path.join(current_dir, "../application/src/amiidb"),
+    os.path.join(current_dir, "../application/src"),
 ]
 
 # Absolute path to the directory where the output file will be saved

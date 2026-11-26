@@ -24,6 +24,8 @@ LANGUAGE_LIST(LANGUAGE_EXTERN_ENTRY)
 
 // 获取字符串的函数 (Get language string function)
 const char* getLangString(L_StringID stringID);
+// Fork-only LCD screens: explicit German/English/Simplified Chinese text.
+const char* getLangAlt(const char* de, const char* en, const char* zh);
 void setLanguage(Language lang);
 Language getLanguage();
 bool isChineseLanguage(void);

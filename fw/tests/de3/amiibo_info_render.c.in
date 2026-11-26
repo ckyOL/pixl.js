@@ -11,6 +11,8 @@ extern const char *const lang_de_DE[];
 extern const char *const lang_en_US[];
 static bool english;
 const char *getLangString(int id) { return (english ? lang_en_US : lang_de_DE)[id]; }
+int isChineseLanguage(void) { return 0; }
+const char *getLangAlt(const char *de, const char *en, const char *zh) { (void)zh; return english ? en : de; }
 const db_amiibo_t *get_amiibo_by_id(uint32_t h,uint32_t t) {
     static const db_amiibo_t known = {0};
     return (h==0 && t==2) || amiibo_detail_model(h,t)!=MODEL_DEFAULT ? &known : NULL;

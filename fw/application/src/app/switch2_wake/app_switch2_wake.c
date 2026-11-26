@@ -80,8 +80,8 @@ typedef struct {
 
 static app_switch2_wake_t *s_active_app = NULL;
 
-static const char *s2_tr(const char *de, const char *en) {
-    return getLanguage() == LANGUAGE_DE_DE ? de : en;
+static const char *s2_tr(const char *de, const char *en, const char *zh) {
+    return getLangAlt(de, en, zh);
 }
 
 static void format_mac_plain(const uint8_t mac[6], char out[13]) {
@@ -122,17 +122,19 @@ static void switch2_wake_add_profile_items(app_switch2_wake_t *app) {
     char sub[16];
 
     mui_list_view_add_item_ext(app->p_list_view, ICON_WAKE,
-                               app->waking ? s2_tr("Sende Weckpaket...", "Waking...") : s2_tr("Switch 2 wecken", "Wake Switch 2"),
+                               app->waking ? s2_tr("Sende Weckpaket...", "Waking...", "正在发送唤醒包...") :
+                                             s2_tr("Switch 2 wecken", "Wake Switch 2", "唤醒 Switch 2"),
                                app->waking ? "..." : "",
                                (void *)SWITCH2_MENU_WAKE);
 
     mui_list_view_add_item_ext(app->p_list_view, ICON_WAKE,
-                               app->scanning ? s2_tr("Suche...", "Scanning...") : s2_tr("Controller suchen", "Scan Wake Pkt"),
+                               app->scanning ? s2_tr("Suche...", "Scanning...", "搜索中...") :
+                                               s2_tr("Controller suchen", "Scan Wake Pkt", "搜索唤醒包"),
                                app->scanning ? "15s" : "",
                                (void *)SWITCH2_MENU_SCAN);
 
     mui_list_view_add_item_ext(app->p_list_view, ICON_MODE,
-                               s2_tr("Beim Tastenstart", "Boot Wake"),
+                               s2_tr("Beim Tastenstart", "Boot Wake", "开机唤醒"),
                                app->cfg.auto_wake ? _T(ON_F) : _T(OFF_F),
                                (void *)SWITCH2_MENU_AUTO_WAKE);
 
@@ -140,9 +142,10 @@ static void switch2_wake_add_profile_items(app_switch2_wake_t *app) {
         snprintf(sub, sizeof(sub), "..%02X%02X%02X",
                  app->cfg.controller_mac[3], app->cfg.controller_mac[4], app->cfg.controller_mac[5]);
     } else {
-        snprintf(sub, sizeof(sub), "%s", s2_tr("Fehlt", "Unset"));
+        snprintf(sub, sizeof(sub), "%s", s2_tr("Fehlt", "Unset", "未设置"));
     }
-    mui_list_view_add_item_ext(app->p_list_view, ICON_EDIT, s2_tr("Controller-MAC", "Ctrl MAC"), sub,
+    mui_list_view_add_item_ext(app->p_list_view, ICON_EDIT,
+                               s2_tr("Controller-MAC", "Ctrl MAC", "控制器 MAC"), sub,
                                (void *)SWITCH2_MENU_EDIT_MAC);
 
     if (app->cfg.has_raw_data) {
@@ -151,27 +154,31 @@ static void switch2_wake_add_profile_items(app_switch2_wake_t *app) {
         snprintf(sub, sizeof(sub), "..%02X%02X%02X",
                  app->cfg.host_mac[3], app->cfg.host_mac[4], app->cfg.host_mac[5]);
     } else {
-        snprintf(sub, sizeof(sub), "%s", s2_tr("Fehlt", "Unset"));
+        snprintf(sub, sizeof(sub), "%s", s2_tr("Fehlt", "Unset", "未设置"));
     }
-    mui_list_view_add_item_ext(app->p_list_view, ICON_EDIT, s2_tr("Switch-2-MAC", "Host MAC"), sub,
+    mui_list_view_add_item_ext(app->p_list_view, ICON_EDIT,
+                               s2_tr("Switch-2-MAC", "Host MAC", "主机 MAC"), sub,
                                (void *)SWITCH2_MENU_EDIT_HOST);
 
-    mui_list_view_add_item_ext(app->p_list_view, ICON_MODE, s2_tr("Controller-Typ", "Ctrl Type"), pid_label(app->cfg.pid),
+    mui_list_view_add_item_ext(app->p_list_view, ICON_MODE,
+                               s2_tr("Controller-Typ", "Ctrl Type", "控制器类型"), pid_label(app->cfg.pid),
                                (void *)SWITCH2_MENU_PID);
 
-    mui_list_view_add_item_ext(app->p_list_view, ICON_MODE, s2_tr("Sendemodus", "Adv Mode"),
+    mui_list_view_add_item_ext(app->p_list_view, ICON_MODE,
+                               s2_tr("Sendemodus", "Adv Mode", "广播模式"),
                                app->cfg.connectable ? "Conn" : "NonConn",
                                (void *)SWITCH2_MENU_MODE);
 
-    mui_list_view_add_item(app->p_list_view, ICON_SAVE, s2_tr("Konfig. speichern", "Save Config"),
+    mui_list_view_add_item(app->p_list_view, ICON_SAVE,
+                           s2_tr("Konfig. speichern", "Save Config", "保存配置"),
                            (void *)SWITCH2_MENU_SAVE_CFG);
 
     if (app->dirty) mui_list_view_add_item(app->p_list_view, ICON_BACK,
-        s2_tr("Aenderung verwerfen", "Discard unsaved"), (void *)SWITCH2_MENU_DISCARD);
+        s2_tr("Aenderung verwerfen", "Discard unsaved", "放弃更改"), (void *)SWITCH2_MENU_DISCARD);
 
     if (app->cfg.has_mac || app->cfg.has_host || app->cfg.auto_wake)
         mui_list_view_add_item(app->p_list_view, ICON_EDIT,
-            s2_tr("Kopplung vergessen", "Forget pairing"), (void *)SWITCH2_MENU_FORGET);
+            s2_tr("Kopplung vergessen", "Forget pairing", "忘记配对"), (void *)SWITCH2_MENU_FORGET);
 }
 
 static void switch2_wake_reload_menu(app_switch2_wake_t *app) {
@@ -182,7 +189,7 @@ static void switch2_wake_reload_menu(app_switch2_wake_t *app) {
         switch2_wake_add_profile_items(app);
     else
         mui_list_view_add_item(app->p_list_view, ICON_BACK,
-            s2_tr("Erneut laden", "Retry load"), (void *)SWITCH2_MENU_RELOAD);
+            s2_tr("Erneut laden", "Retry load", "重新加载"), (void *)SWITCH2_MENU_RELOAD);
     mui_list_view_add_item(app->p_list_view, ICON_BACK, _T(MAIN_RETURN),
                            (void *)SWITCH2_MENU_EXIT);
 
@@ -199,7 +206,7 @@ static void switch2_wake_open_profile(app_switch2_wake_t *app) {
     if (app->profile_loaded)
         app->saved_cfg = app->cfg;
     else
-        mui_toast_view_show(app->p_toast_view, s2_tr("Lesefehler", "Read failed"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Lesefehler", "Read failed", "读取失败"));
     switch2_wake_reload_menu(app);
 }
 
@@ -216,7 +223,7 @@ static bool switch2_save_current(app_switch2_wake_t *app) {
 static void switch2_save_feedback(app_switch2_wake_t *app) {
     bool saved = switch2_save_current(app);
     switch2_wake_reload_menu(app);
-    mui_toast_view_show(app->p_toast_view, saved ? s2_tr("Konfig. gespeichert", "Config Saved") : _T(FAILED));
+    mui_toast_view_show(app->p_toast_view, saved ? s2_tr("Konfig. gespeichert", "Config Saved", "配置已保存") : _T(FAILED));
 }
 
 static void switch2_wake_on_ble_done(uint32_t result) {
@@ -225,7 +232,7 @@ static void switch2_wake_on_ble_done(uint32_t result) {
     }
     s_active_app->waking = false;
     switch2_wake_reload_menu(s_active_app);
-    mui_toast_view_show(s_active_app->p_toast_view, result == NRF_SUCCESS ? s2_tr("Weckpaket gesendet", "Wake Sent") : _T(FAILED));
+    mui_toast_view_show(s_active_app->p_toast_view, result == NRF_SUCCESS ? s2_tr("Weckpaket gesendet", "Wake Sent", "唤醒包已发送") : _T(FAILED));
     mui_update(mui());
 }
 
@@ -246,10 +253,10 @@ static void switch2_wake_on_scan_done(bool found, const ble_switch2_scan_result_
         bool saved = switch2_save_current(s_active_app);
         switch2_wake_reload_menu(s_active_app);
         mui_toast_view_show(s_active_app->p_toast_view,
-                            saved ? s2_tr("Erfasst + gespeichert", "Captured!") : _T(FAILED));
+                            saved ? s2_tr("Erfasst + gespeichert", "Captured!", "已捕获并保存") : _T(FAILED));
     } else {
         switch2_wake_reload_menu(s_active_app);
-        mui_toast_view_show(s_active_app->p_toast_view, s2_tr("Kein Paket gefunden", "Scan Timeout"));
+        mui_toast_view_show(s_active_app->p_toast_view, s2_tr("Kein Paket gefunden", "Scan Timeout", "未找到数据包"));
     }
     mui_update(mui());
 }
@@ -259,7 +266,7 @@ static void switch2_wake_toggle_scan(app_switch2_wake_t *app) {
         ble_switch2_scan_stop();
         app->scanning = false;
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Suche beendet", "Scan Stopped"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Suche beendet", "Scan Stopped", "搜索已停止"));
         return;
     }
 
@@ -267,12 +274,12 @@ static void switch2_wake_toggle_scan(app_switch2_wake_t *app) {
         ble_raw_adv_stop();
         app->waking = false;
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Senden aus; erneut", "Stopped; press again"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Senden aus; erneut", "Stopped; press again", "已停止；请重按"));
         return;
     }
     if (ble_miniapp_radio_busy()) {
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Funk wird beendet", "Radio is stopping"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Funk wird beendet", "Radio is stopping", "无线电正在关闭"));
         return;
     }
 
@@ -286,7 +293,7 @@ static void switch2_wake_toggle_scan(app_switch2_wake_t *app) {
 
     app->scanning = true;
     switch2_wake_reload_menu(app);
-    mui_toast_view_show(app->p_toast_view, s2_tr("Home am Controller", "Press JC2 Home"));
+    mui_toast_view_show(app->p_toast_view, s2_tr("Home am Controller", "Press JC2 Home", "按 JC2 Home"));
 }
 
 static void switch2_wake_trigger(app_switch2_wake_t *app) {
@@ -294,31 +301,31 @@ static void switch2_wake_trigger(app_switch2_wake_t *app) {
         ble_switch2_scan_stop();
         app->scanning = false;
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Suche aus; erneut", "Stopped; press again"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Suche aus; erneut", "Stopped; press again", "已停止；请重按"));
         return;
     }
     if (app->waking) {
         ble_raw_adv_stop();
         app->waking = false;
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Senden beendet", "Stopped"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Senden beendet", "Stopped", "发送已停止"));
         return;
     }
 
     if (ble_miniapp_radio_busy()) {
         switch2_wake_reload_menu(app);
-        mui_toast_view_show(app->p_toast_view, s2_tr("Funk wird beendet", "Radio is stopping"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Funk wird beendet", "Radio is stopping", "无线电正在关闭"));
         return;
     }
     if (!app->cfg.has_mac) {
-        mui_toast_view_show(app->p_toast_view, s2_tr("Controller-MAC fehlt", "Set Ctrl MAC"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Controller-MAC fehlt", "Set Ctrl MAC", "请设置控制器 MAC"));
         return;
     }
 
     uint8_t adv_payload[SWITCH2_WAKE_ADV_LEN];
     uint8_t adv_len = switch2_wake_build_adv(&app->cfg, adv_payload);
     if (adv_len == 0) {
-        mui_toast_view_show(app->p_toast_view, s2_tr("Switch-2-MAC fehlt", "Set Host MAC"));
+        mui_toast_view_show(app->p_toast_view, s2_tr("Switch-2-MAC fehlt", "Set Host MAC", "请设置主机 MAC"));
         return;
     }
 
@@ -334,7 +341,7 @@ static void switch2_wake_trigger(app_switch2_wake_t *app) {
 
     app->waking = true;
     switch2_wake_reload_menu(app);
-    mui_toast_view_show(app->p_toast_view, s2_tr("Sende Weckpaket...", "Waking..."));
+    mui_toast_view_show(app->p_toast_view, s2_tr("Sende Weckpaket...", "Waking...", "正在发送唤醒包..."));
 }
 
 static void switch2_wake_text_input_cb(mui_text_input_event_t event, mui_text_input_t *p_text_input) {
@@ -344,7 +351,7 @@ static void switch2_wake_text_input_cb(mui_text_input_event_t event, mui_text_in
         const char *txt = mui_text_input_get_input_text(p_text_input);
         uint8_t mac[6];
         if (!parse_mac_str(txt, mac)) {
-            mui_toast_view_show(app->p_toast_view, s2_tr("MAC ungueltig!", "Invalid MAC!"));
+            mui_toast_view_show(app->p_toast_view, s2_tr("MAC ungueltig!", "Invalid MAC!", "MAC 无效！"));
             mui_view_dispatcher_switch_to_view(app->p_view_dispatcher, SWITCH2_WAKE_VIEW_LIST);
             app->edit_target = SWITCH2_EDIT_NONE;
             return;
@@ -363,7 +370,7 @@ static void switch2_wake_text_input_cb(mui_text_input_event_t event, mui_text_in
         bool saved = switch2_save_current(app);
         switch2_wake_reload_menu(app);
         mui_toast_view_show(app->p_toast_view,
-                            saved ? s2_tr("Konfig. gespeichert", "Config Saved") : _T(FAILED));
+                            saved ? s2_tr("Konfig. gespeichert", "Config Saved", "配置已保存") : _T(FAILED));
     }
 
     app->edit_target = SWITCH2_EDIT_NONE;
@@ -376,12 +383,12 @@ static void switch2_wake_open_mac_editor(app_switch2_wake_t *app, switch2_edit_t
 
     mui_text_input_reset(app->p_text_input);
     if (target == SWITCH2_EDIT_MAC) {
-        mui_text_input_set_header(app->p_text_input, s2_tr("Controller-MAC", "Ctrl MAC"));
+        mui_text_input_set_header(app->p_text_input, s2_tr("Controller-MAC", "Ctrl MAC", "控制器 MAC"));
         if (app->cfg.has_mac) {
             format_mac_plain(app->cfg.controller_mac, initial);
         }
     } else {
-        mui_text_input_set_header(app->p_text_input, s2_tr("Switch-2-MAC", "Host MAC"));
+        mui_text_input_set_header(app->p_text_input, s2_tr("Switch-2-MAC", "Host MAC", "主机 MAC"));
         if (app->cfg.has_host) {
             format_mac_plain(app->cfg.host_mac, initial);
         }
@@ -402,7 +409,7 @@ static void switch2_wake_forget_response(mui_msg_box_event_t event, mui_msg_box_
             app->saved_cfg = app->cfg;
             app->dirty = false;
             switch2_wake_reload_menu(app);
-            mui_toast_view_show(app->p_toast_view, s2_tr("Kopplung entfernt", "Pairing forgotten"));
+            mui_toast_view_show(app->p_toast_view, s2_tr("Kopplung entfernt", "Pairing forgotten", "配对已忘记"));
         } else {
             mui_toast_view_show(app->p_toast_view, _T(FAILED));
         }
@@ -463,12 +470,12 @@ static void switch2_wake_list_selected_cb(mui_list_view_event_t event, mui_list_
         break;
     case SWITCH2_MENU_FORGET:
         if (app->scanning || app->waking || ble_miniapp_radio_busy()) {
-            mui_toast_view_show(app->p_toast_view, s2_tr("Funk aktiv", "Radio busy"));
+            mui_toast_view_show(app->p_toast_view, s2_tr("Funk aktiv", "Radio busy", "无线电忙"));
             break;
         }
         mui_msg_box_set_header(app->p_forget_box, "Switch 2");
-        mui_msg_box_set_message(app->p_forget_box, s2_tr("Kopplung vergessen?", "Forget pairing?"));
-        mui_msg_box_set_btn_text(app->p_forget_box, _T(CANCEL), NULL, s2_tr("Vergessen", "Forget"));
+        mui_msg_box_set_message(app->p_forget_box, s2_tr("Kopplung vergessen?", "Forget pairing?", "忘记配对？"));
+        mui_msg_box_set_btn_text(app->p_forget_box, _T(CANCEL), NULL, s2_tr("Vergessen", "Forget", "忘记"));
         mui_msg_box_set_btn_focus(app->p_forget_box, MUI_MSG_BOX_EVENT_SELECT_LEFT);
         mui_view_dispatcher_switch_to_view(app->p_view_dispatcher, SWITCH2_WAKE_VIEW_FORGET);
         break;

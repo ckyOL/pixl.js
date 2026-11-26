@@ -10,14 +10,13 @@
 #define ICON_INFO 0xe0ae
 
 static void amiibo_detail_view_draw_notes(amiibo_detail_view_t *view, mui_canvas_t *canvas) {
-    const bool german = getLanguage() == LANGUAGE_DE_DE;
     const char *text = (const char *)view->ntag->notes;
-    if (!*text) text = german ? "Keine eigene Notiz." : "No personal note.";
+    if (!*text) text = getLangAlt("Keine eigene Notiz.", "No personal note.", "暂无个人备注。");
     mui_canvas_set_font(canvas, u8g2_font_wqy12_t_gb2312a);
     mui_canvas_set_draw_color(canvas, 1);
     mui_canvas_draw_box(canvas, 0, 0, mui_canvas_get_width(canvas), 12);
     mui_canvas_set_draw_color(canvas, 0);
-    mui_canvas_draw_utf8(canvas, 2, 10, german ? "Eigene Notiz" : "Personal note");
+    mui_canvas_draw_utf8(canvas, 2, 10, getLangAlt("Eigene Notiz", "Personal note", "个人备注"));
     mui_canvas_set_draw_color(canvas, 1);
     view->note_total = mui_element_autowrap_text_box(canvas, 0, 12, mui_canvas_get_width(canvas),
                                                     29, 26, view->note_offset, 0, text);
@@ -25,8 +24,8 @@ static void amiibo_detail_view_draw_notes(amiibo_detail_view_t *view, mui_canvas
     mui_canvas_set_draw_color(canvas, 0);
     mui_canvas_draw_box(canvas, 0, 12, mui_canvas_get_width(canvas) - 4, 2);
     mui_canvas_set_draw_color(canvas, 1);
-    mui_canvas_draw_utf8(canvas, 1, 52, german ? "L/R: blättern" : "L/R: scroll");
-    mui_canvas_draw_utf8(canvas, 1, 63, german ? "Mitte: zurück" : "Center: back");
+    mui_canvas_draw_utf8(canvas, 1, 52, getLangAlt("L/R: blättern", "L/R: scroll", "L/R:翻页"));
+    mui_canvas_draw_utf8(canvas, 1, 63, getLangAlt("Mitte: zurück", "Center: back", "中键:返回"));
 }
 
 static void amiibo_detail_view_on_draw(mui_view_t *p_view, mui_canvas_t *p_canvas) {

@@ -17,6 +17,7 @@ static struct { bool anim_enabled,qrcode_enabled; } settings={true,true};
 #define settings_get_data() (&settings)
 static bool chinese,german,linked=true;
 int getLanguage(void) { return german ? LANGUAGE_DE_DE : LANGUAGE_EN_US; }
+const char *getLangAlt(const char *de, const char *en, const char *zh) { return german ? de : chinese ? zh : en; }
 static unsigned animation_starts,animation_stops,menu_events,desc_events,slot_events,frames,qr_checks;
 static db_amiibo_t entry={"AAA","AAA"};
 static db_notes_t descriptions={"Linked description with many useful details, enough text to scroll across multiple lines and pages. More information follows.",
@@ -29,7 +30,7 @@ static const db_notes_t *const db_usage_notes=&descriptions;
 #endif
 extern const char *const lang_de_DE[];
 const char *getLangString(int id) { return lang_de_DE[id]; }
-static bool isChineseLanguage(void) { return chinese; }
+int isChineseLanguage(void) { return chinese; }
 static const char *get_amiibo_display_name(const db_amiibo_t *item) {
     const char *name = amiibo_detail_german_name(item->head, item->tail);
     return german && name ? name : chinese && *item->name_cn ? item->name_cn : item->name_en;

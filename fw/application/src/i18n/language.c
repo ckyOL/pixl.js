@@ -27,6 +27,19 @@ const char *getLangString(L_StringID stringID) {
 
 void setLanguage(Language lang) { currentLanguage = lang; }
 
+const char *getLangAlt(const char *de, const char *en, const char *zh) {
+    switch (getLanguage()) {
+    case LANGUAGE_DE_DE:
+        return de;
+#ifdef LANGUAGE_HAS_ZH_HANS
+    case LANGUAGE_ZH_HANS:
+        return zh;
+#endif
+    default:
+        return en;
+    }
+}
+
 const char *getLangDesc(Language lang) {
     switch (lang) {
 #define LANGUAGE_DESC_ENTRY(suffix, file, desc) case LANGUAGE_##suffix: return desc;

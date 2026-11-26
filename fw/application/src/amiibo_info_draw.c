@@ -13,10 +13,12 @@ void amiibo_active_menu_hint(mui_canvas_t *canvas, uint8_t width) {
     if (width > mui_canvas_get_width(canvas)) width = mui_canvas_get_width(canvas);
     const uint8_t *font = u8g2_GetFont(canvas->fb);
     const uint8_t color = mui_canvas_get_draw_color(canvas);
-    const uint8_t top = mui_canvas_get_height(canvas) - AMIIBO_ACTIVE_HINT_HEIGHT;
+    const bool chinese = isChineseLanguage();
+    const uint8_t hint_height = chinese ? 13 : AMIIBO_ACTIVE_HINT_HEIGHT;
+    const uint8_t top = mui_canvas_get_height(canvas) - hint_height;
     mui_rect_t old_clip, clip;
     mui_canvas_get_clip_window(canvas, &old_clip);
-    clip = (mui_rect_t){0, top, width, AMIIBO_ACTIVE_HINT_HEIGHT};
+    clip = (mui_rect_t){0, top, width, hint_height};
     /* Do not widen an enclosing view's clip or touch the adjacent QR box. */
     uint16_t right = old_clip.x + old_clip.w;
     uint16_t bottom = old_clip.y + old_clip.h;
@@ -28,13 +30,15 @@ void amiibo_active_menu_hint(mui_canvas_t *canvas, uint8_t width) {
     clip.h = bottom > clip.y ? bottom - clip.y : 0;
     mui_canvas_set_clip_window(canvas, &clip);
     mui_canvas_set_draw_color(canvas, 0);
-    mui_canvas_draw_box(canvas, 0, top, width, AMIIBO_ACTIVE_HINT_HEIGHT);
+    mui_canvas_draw_box(canvas, 0, top, width, hint_height);
     mui_canvas_set_draw_color(canvas, 1);
     mui_canvas_draw_line(canvas, 0, top, width - 1, top);
-    /* The existing small font is ASCII-only; spell the German umlaut as UE. */
-    mui_canvas_set_font(canvas, u8g2_font_likeminecraft_te);
+    /* ASCII font for German/English; Chinese needs the 13px CJK font, which
+     * grows the hint strip from 9 to 13 pixels. */
+    mui_canvas_set_font(canvas, chinese ? u8g2_font_wqy12_t_gb2312a : u8g2_font_likeminecraft_te);
     mui_canvas_draw_utf8(canvas, 1, mui_canvas_get_height(canvas) - 1,
-                         getLanguage() == LANGUAGE_DE_DE ? "MITTE: MENUE" : "CENTER: MENU");
+                         chinese ? "中键:菜单" :
+                         getLangAlt("MITTE: MENUE", "CENTER: MENU", "中键:菜单"));
     mui_canvas_set_font(canvas, font);
     mui_canvas_set_draw_color(canvas, color);
     mui_canvas_set_clip_window(canvas, &old_clip);

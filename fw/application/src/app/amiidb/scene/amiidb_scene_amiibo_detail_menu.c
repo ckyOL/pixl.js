@@ -268,7 +268,7 @@ void amiidb_scene_amiibo_detail_menu_on_enter(void *user_data) {
     mui_list_view_add_item(app->p_list_view, 0xe0ae, _T(DE3_FIGURE_INFO),
                            (void *)AMIIDB_DETAIL_MENU_FIGURE_INFO);
     mui_list_view_add_item(app->p_list_view, 0xe0ae,
-                           getLanguage() == LANGUAGE_DE_DE ? "Notiz / Hinweise" : "Note / hints",
+                           getLangAlt("Notiz / Hinweise", "Note / hints", "备注 / 提示"),
                            (void *)AMIIDB_DETAIL_MENU_NOTES);
 
     mui_list_view_add_item(app->p_list_view, 0xe1c5, getLangString(_L_RANDOM_GENERATION),

@@ -106,18 +106,18 @@ static const char *amiibo_view_usage(const amiibo_view_t *view, char *translated
 }
 
 static void amiibo_view_draw_notes(amiibo_view_t *view, mui_canvas_t *canvas, char *translated) {
-    const bool german = getLanguage() == LANGUAGE_DE_DE;
     const bool own = view->info_page == 3;
     const char *text = own ? (const char *)view->ntag->notes : amiibo_view_usage(view, translated);
-    if (!*text) text = own ? (german ? "Keine eigene Notiz." : "No personal note.") :
-        (german ? "Kein Hinweis zur Spielauswahl. Spiel in der Datenbank wählen." :
-                  "No hint for this game selection. Choose a game in the database.");
+    if (!*text) text = own ? getLangAlt("Keine eigene Notiz.", "No personal note.", "暂无个人备注。") :
+        getLangAlt("Kein Hinweis zur Spielauswahl. Spiel in der Datenbank wählen.",
+                   "No hint for this game selection. Choose a game in the database.",
+                   "此游戏选择暂无提示。请在数据库中选择游戏。");
     mui_canvas_set_font(canvas, u8g2_font_wqy12_t_gb2312a);
     mui_canvas_set_draw_color(canvas, 1);
     mui_canvas_draw_box(canvas, 0, 0, mui_canvas_get_width(canvas), 12);
     mui_canvas_set_draw_color(canvas, 0);
-    mui_canvas_draw_utf8(canvas, 2, 10, own ? (german ? "Deine Notiz" : "Your note") :
-                                                  (german ? "Spielhinweis" : "Game hint"));
+    mui_canvas_draw_utf8(canvas, 2, 10, own ? getLangAlt("Deine Notiz", "Your note", "你的备注") :
+                                                  getLangAlt("Spielhinweis", "Game hint", "游戏提示"));
     mui_canvas_draw_utf8(canvas, 105, 10, own ? "1/2" : "2/2");
     mui_canvas_set_draw_color(canvas, 1);
     /* Whole-line scrolling also makes the final page readable at its limit. */
@@ -131,34 +131,35 @@ static void amiibo_view_draw_notes(amiibo_view_t *view, mui_canvas_t *canvas, ch
     mui_canvas_set_draw_color(canvas, 0);
     mui_canvas_draw_box(canvas, 0, 12, mui_canvas_get_width(canvas) - 4, 2);
     mui_canvas_set_draw_color(canvas, 1);
-    mui_canvas_draw_utf8(canvas, 1, 52, german ? "L/R: Seite  M: zurück" : "L/R: page  M: back");
-    mui_canvas_draw_utf8(canvas, 1, 63, german ? "L/R halten: blättern" : "Hold L/R: scroll");
+    mui_canvas_draw_utf8(canvas, 1, 52, getLangAlt("L/R: Seite  M: zurück", "L/R: page  M: back", "L/R:翻页 M:返回"));
+    mui_canvas_draw_utf8(canvas, 1, 63, getLangAlt("L/R halten: blättern", "Hold L/R: scroll", "长按 L/R:滚动"));
 }
 
 static void amiibo_view_draw_catalog_card(amiibo_view_t *view, mui_canvas_t *canvas, char *translated) {
     const db_amiibo_t *entry = view->catalog_entry;
     const bool hint = view->info_page == 2;
-    const bool german = getLanguage() == LANGUAGE_DE_DE;
     const uint8_t width = mui_canvas_get_width(canvas);
     mui_canvas_set_font(canvas, u8g2_font_wqy12_t_gb2312a);
     mui_canvas_set_draw_color(canvas, 1);
     mui_canvas_draw_box(canvas, 0, 0, width, 12);
     mui_canvas_set_draw_color(canvas, 0);
-    mui_canvas_draw_utf8(canvas, 2, 10, hint ? (german ? "Spielhinweis" : "Game hint") :
-                                                (german ? "Figurenkatalog" : "Figure catalog"));
+    mui_canvas_draw_utf8(canvas, 2, 10, hint ? getLangAlt("Spielhinweis", "Game hint", "游戏提示") :
+                                                getLangAlt("Figurenkatalog", "Figure catalog", "amiibo 图鉴"));
     mui_canvas_draw_utf8(canvas, 105, 10, hint ? "2/2" : "1/2");
     mui_canvas_set_draw_color(canvas, 1);
     const char *text = get_amiibo_display_name(entry);
     uint8_t text_width = width;
     if (hint) {
         const db_link_t *link = get_link_by_id(view->game_id, entry->head, entry->tail);
-        const char *en = link ? db_usage_notes[link->note_index].en : "";
-        text = german ? amiibo_usage_de(en, translated, AMIIBO_USAGE_DE_BUFFER_BYTES) : en;
+        const db_notes_t *notes = link ? &db_usage_notes[link->note_index] : NULL;
+        const char *en = notes ? notes->en : "";
+        if (isChineseLanguage() && notes && notes->cn[0]) text = notes->cn;
+        else text = getLanguage() == LANGUAGE_DE_DE ? amiibo_usage_de(en, translated, AMIIBO_USAGE_DE_BUFFER_BYTES) : en;
     } else if (width >= 96 && amiibo_info_portrait(canvas, entry->head, entry->tail, width - 32, 16)) {
         text_width = width - 34;
     }
     mui_element_autowrap_text_box(canvas, 0, 12, text_width, 41, 39, 0, 0, text);
-    mui_canvas_draw_utf8(canvas, 1, 63, german ? "L/R: Seite  M: zurück" : "L/R: page  M: back");
+    mui_canvas_draw_utf8(canvas, 1, 63, getLangAlt("L/R: Seite  M: zurück", "L/R: page  M: back", "L/R:翻页 M:返回"));
 }
 
 static void amiibo_view_on_draw(mui_view_t *p_view, mui_canvas_t *p_canvas) {

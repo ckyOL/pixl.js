@@ -386,7 +386,7 @@ void amiibo_scene_amiibo_detail_menu_on_enter(void *user_data) {
     mui_list_view_add_item(app->p_list_view, 0xe0ae, _T(DE3_FIGURE_INFO),
                            (void *)AMIIBO_DETAIL_MENU_FIGURE_INFO);
     mui_list_view_add_item(app->p_list_view, 0xe0ae,
-                           getLanguage() == LANGUAGE_DE_DE ? "Eigene Notiz" : "Personal note",
+                           getLangAlt("Eigene Notiz", "Personal note", "个人备注"),
                            (void *)AMIIBO_DETAIL_MENU_PERSONAL_NOTE);
 
     mui_list_view_add_item(app->p_list_view, 0xe1c5, getLangString(_L_RANDOM_GENERATION),

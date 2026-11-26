@@ -341,7 +341,6 @@ static void settings_scene_main_reload(void *user_data) {
     }
     mui_list_view_add_item_ext(app->p_list_view, 0xe1c8, _T(APP_SET_LCD_BACKLIGHT), backlight_value,
                                (void *)SETTINGS_MAIN_MENU_BACK_LIGHT);
-    bool de = p_settings->language == LANGUAGE_DE_DE;
     const char *dim_value = _T(OFF);
     if (settings_get_lcd_dim()) {
         uint8_t delay = settings_lcd_dim_idle_seconds();
@@ -349,10 +348,10 @@ static void settings_scene_main_reload(void *user_data) {
             snprintf(txt, sizeof(txt), "%u s", (unsigned)delay);
             dim_value = txt;
         } else {
-            dim_value = de ? "vor Schlaf" : "pre-sleep";
+            dim_value = getLangAlt("vor Schlaf", "pre-sleep", "睡前");
         }
     }
-    mui_list_view_add_item_ext(app->p_list_view, 0xe1c9, de ? "Dimmen" : "Auto dim",
+    mui_list_view_add_item_ext(app->p_list_view, 0xe1c9, getLangAlt("Dimmen", "Auto dim", "自动调光"),
                                dim_value, (void *)SETTINGS_MAIN_MENU_LCD_DIM);
 #endif
 
@@ -408,17 +407,17 @@ static void settings_scene_main_reload(void *user_data) {
     }
 #if defined(BOARD_LCD) && defined(PIXL_RUNTIME_DIAGNOSTICS)
     mui_list_view_add_item(app->p_list_view, 0xe1c7,
-                           p_settings->language == LANGUAGE_DE_DE ? "Gerätetest" : "Device test",
+                           getLangAlt("Gerätetest", "Device test", "设备测试"),
                            (void *)SETTINGS_MAIN_MENU_DEVICE_TEST);
 #endif
     /* Read-only base provenance: a pending user edit is not a failed load.
      * Keep the fast first frame; this accessor never reads the filesystem. */
     settings_load_state_t load = settings_load_state();
-    bool german = p_settings->language == LANGUAGE_DE_DE;
-    const char *base = load == SETTINGS_LOAD_VERIFIED ? (german ? "gelesen" : "loaded") :
-                       load == SETTINGS_LOAD_DEFAULTS ? (german ? "Standard" : "defaults") :
-                                                       (german ? "Lesen offen" : "read pending");
-    mui_list_view_add_item_ext(app->p_list_view, 0xe1c7, german ? "Ladebasis" : "Load base", base,
+    const char *base = load == SETTINGS_LOAD_VERIFIED ? getLangAlt("gelesen", "loaded", "已读取") :
+                       load == SETTINGS_LOAD_DEFAULTS ? getLangAlt("Standard", "defaults", "默认") :
+                                                       getLangAlt("Lesen offen", "read pending", "读取待定");
+    mui_list_view_add_item_ext(app->p_list_view, 0xe1c7,
+                               getLangAlt("Ladebasis", "Load base", "加载状态"), base,
                                (void *)SETTINGS_MAIN_MENU_LOAD_STATE);
     mui_list_view_add_item(app->p_list_view, 0xe069, _T(BACK_TO_MAIN_MENU), (void *)SETTINGS_MAIN_MENU_EXIT);
 

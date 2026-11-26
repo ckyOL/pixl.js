@@ -25,8 +25,8 @@ typedef struct {
 } app_ble_stream_t;
 static app_ble_stream_t *s_stream_app;
 
-static const char *stream_tr(const char *de, const char *en) {
-    return getLanguage() == LANGUAGE_DE_DE ? de : en;
+static const char *stream_tr(const char *de, const char *en, const char *zh) {
+    return getLangAlt(de, en, zh);
 }
 static void stream_reset_codec(app_ble_stream_t *app) {
     bool had_frame = app->codec.has_frame;
@@ -150,9 +150,9 @@ static void stream_view_on_draw(mui_view_t *view, mui_canvas_t *canvas) {
         mui_canvas_set_font(canvas, u8g2_font_wqy12_t_gb2312a);
         mui_canvas_draw_utf8(canvas, 14, 14, _T(APP_BLE_STREAM));
         mui_canvas_draw_utf8(canvas, 12, 30, app->address);
-        mui_canvas_draw_utf8(canvas, 2, 46, app->connected ? stream_tr("Warte auf Bild...", "Waiting for frame...") :
-                                                           stream_tr("Warte auf Verbindung", "Waiting for BLE"));
-        mui_canvas_draw_utf8(canvas, 2, 60, stream_tr("L:Info R:Inv M:Ende", "L:HUD R:Inv C:Exit"));
+        mui_canvas_draw_utf8(canvas, 2, 46, app->connected ? stream_tr("Warte auf Bild...", "Waiting for frame...", "等待图像...") :
+                                                           stream_tr("Warte auf Verbindung", "Waiting for BLE", "等待蓝牙连接"));
+        mui_canvas_draw_utf8(canvas, 2, 60, stream_tr("L:Info R:Inv M:Ende", "L:HUD R:Inv C:Exit", "L:信息 R:反转 M:退出"));
     }
 }
 static void stream_view_on_input(mui_view_t *view, mui_input_event_t *event) {

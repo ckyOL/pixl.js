@@ -50,8 +50,7 @@ static int game_scene_game_list_list_item_cmp(const mui_list_item_t *p_item_a, c
 static void game_scene_game_list_reload_folders(app_game_t *app) {
     mui_list_view_clear_items(app->p_list_view);
     mui_list_view_add_item(app->p_list_view, ICON_HOME, _T(MAIN_MENU), (void *)-1);
-    mui_list_view_add_item(app->p_list_view, ICON_HELP, getLanguage() == LANGUAGE_DE_DE ?
-                           "Mitte halten: zurück" : "Hold center: back", NULL);
+    mui_list_view_add_item(app->p_list_view, ICON_HELP, getLangAlt("Mitte halten: zurück", "Hold center: back", "长按中键: 返回"), NULL);
     mui_list_view_add_item(app->p_list_view, ICON_FILE, _T(APP_GAME_TINY_LANDER), tiny_lander_run);
     mui_list_view_add_item(app->p_list_view, ICON_FILE, _T(APP_GAME_TINY_INVADERS) , tiny_invaders_run);
     mui_list_view_add_item(app->p_list_view, ICON_FILE, _T(APP_GAME_TINY_ARKANOID), tiny_arkanoid_run);
@@ -77,16 +76,17 @@ static void game_controls_back(mui_list_view_event_t event, mui_list_view_t *lis
 void game_scene_controls_on_enter(void *user_data) {
     app_game_t *app = user_data;
     mui_list_view_t *list = app->p_list_view;
-    bool de = getLanguage() == LANGUAGE_DE_DE;
     mui_list_view_clear_items(list);
     mui_list_view_add_item(list, ICON_BACK, _T(BACK), NULL);
-    mui_list_view_add_item_ext(list, ICON_HELP, de ? "Seitentasten" : "Side keys", de ? "Steuern" : "Steer", NULL);
-    mui_list_view_add_item_ext(list, ICON_HELP, de ? "Mitte halten" : "Hold center", de ? "Beenden" : "Exit", NULL);
-    mui_list_view_add_item(list, ICON_HELP, de ? "Mitte im Spiel" : "Center in game", NULL);
-    mui_list_view_add_item_ext(list, ICON_FILE, "Lander", de ? "Schub" : "Thrust", NULL);
-    mui_list_view_add_item_ext(list, ICON_FILE, "Invaders", de ? "Feuern" : "Fire", NULL);
-    mui_list_view_add_item_ext(list, ICON_FILE, "Arkanoid", de ? "Ball starten" : "Launch ball", NULL);
-    mui_list_view_add_item_ext(list, ICON_FILE, "Tris", de ? "Drehen" : "Rotate", NULL);
+    mui_list_view_add_item_ext(list, ICON_HELP, getLangAlt("Seitentasten", "Side keys", "侧键"),
+                               getLangAlt("Steuern", "Steer", "转向"), NULL);
+    mui_list_view_add_item_ext(list, ICON_HELP, getLangAlt("Mitte halten", "Hold center", "长按中键"),
+                               getLangAlt("Beenden", "Exit", "退出"), NULL);
+    mui_list_view_add_item(list, ICON_HELP, getLangAlt("Mitte im Spiel", "Center in game", "游戏中中键"), NULL);
+    mui_list_view_add_item_ext(list, ICON_FILE, "Lander", getLangAlt("Schub", "Thrust", "推进"), NULL);
+    mui_list_view_add_item_ext(list, ICON_FILE, "Invaders", getLangAlt("Feuern", "Fire", "开火"), NULL);
+    mui_list_view_add_item_ext(list, ICON_FILE, "Arkanoid", getLangAlt("Ball starten", "Launch ball", "发射球"), NULL);
+    mui_list_view_add_item_ext(list, ICON_FILE, "Tris", getLangAlt("Drehen", "Rotate", "旋转"), NULL);
     mui_list_view_set_selected_cb(list, game_controls_back);
     mui_view_dispatcher_switch_to_view(app->p_view_dispatcher, GAME_VIEW_ID_LIST);
 }

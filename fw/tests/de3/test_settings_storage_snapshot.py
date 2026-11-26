@@ -50,6 +50,7 @@ typedef enum { SETTINGS_LOAD_PENDING, SETTINGS_LOAD_DEFAULTS, SETTINGS_LOAD_VERI
 static settings_load_state_t settings_load_state(void){return SETTINGS_LOAD_VERIFIED;}
 static const char*getLangDesc(unsigned n){(void)n;return "Deutsch";}
 static const char*getLangString(int id){(void)id;return "label";}
+static const char*getLangAlt(const char*de,const char*en,const char*zh){(void)en;(void)zh;return de;}
 static int nrf_pwr_mgmt_get_timeout(void){return 180;}
 static unsigned mui_list_view_get_focus(void*p){(void)p;return 1;}
 static unsigned mui_list_view_get_scroll_offset(void*p){(void)p;return 0;}

@@ -10,8 +10,8 @@
 #include "ble_remote.h"
 
 #if defined(BOARD_LCD) && defined(PIXL_RUNTIME_DIAGNOSTICS)
-static const char *device_test_remote_status(bool de) {
-    if (!ble_remote_enabled()) return de ? "Remote: aus" : "Remote: off";
+static const char *device_test_remote_status(void) {
+    if (!ble_remote_enabled()) return getLangAlt("Remote: aus", "Remote: off", "遥控: 关");
     uint8_t phase = ble_remote_init_phase();
     uint32_t result = ble_remote_init_result();
     if (result && phase != BLE_REMOTE_INIT_IDLE && phase != BLE_REMOTE_INIT_READY) {
@@ -20,13 +20,13 @@ static const char *device_test_remote_status(bool de) {
         return text;
     }
     if (!ble_remote_mode_active() || ble_mode_transition_pending())
-        return de ? "Remote: wartet" : "Remote: waiting";
+        return getLangAlt("Remote: wartet", "Remote: waiting", "遥控: 等待");
     switch (ble_status_state_get()) {
     case BLE_LINK_ADVERTISING: return "BLE: Pixl.Remote";
-    case BLE_LINK_CONNECTED: return de ? "Remote: verbunden" : "Remote: connected";
-    case BLE_LINK_HOST_CONNECTED: return de ? "Remote: nur Link" : "Remote: link only";
-    case BLE_LINK_DISCONNECTING: return de ? "Remote: trennt" : "Remote: closing";
-    default: return de ? "Remote: inaktiv" : "Remote: idle";
+    case BLE_LINK_CONNECTED: return getLangAlt("Remote: verbunden", "Remote: connected", "遥控: 已连接");
+    case BLE_LINK_HOST_CONNECTED: return getLangAlt("Remote: nur Link", "Remote: link only", "遥控: 仅链路");
+    case BLE_LINK_DISCONNECTING: return getLangAlt("Remote: trennt", "Remote: closing", "遥控: 断开中");
+    default: return getLangAlt("Remote: inaktiv", "Remote: idle", "遥控: 空闲");
     }
 }
 
@@ -41,20 +41,20 @@ static void device_test_exit(mui_view_t *view) {
     settings_device_test_restore(view->user_data);
 }
 
-static void device_test_footer(mui_canvas_t *canvas, bool de) {
+static void device_test_footer(mui_canvas_t *canvas) {
     mui_canvas_set_font(canvas, MUI_FONT_SMALL);
-    mui_canvas_draw_utf8(canvas, 4, 61, de ? "Mitte:weiter; lang:Ende" : "Center:next; hold:back");
+    mui_canvas_draw_utf8(canvas, 4, 61, getLangAlt("Mitte:weiter; lang:Ende", "Center:next; hold:back", "中键:下一步; 长按:返回"));
     mui_canvas_draw_rframe(canvas, 0, 0, 128, 64, 0);
 }
 
-static void device_test_light_draw(app_settings_t *app, mui_canvas_t *canvas, bool de) {
+static void device_test_light_draw(app_settings_t *app, mui_canvas_t *canvas) {
     char text[32];
     mui_canvas_set_font(canvas, MUI_FONT_NORMAL);
-    mui_canvas_draw_utf8(canvas, 4, 11, de ? "Lichttest" : "Backlight test");
+    mui_canvas_draw_utf8(canvas, 4, 11, getLangAlt("Lichttest", "Backlight test", "背光测试"));
     int8_t actual = mui_u8g2_get_backlight_level();
     if (actual < 0) snprintf(text, sizeof(text), "PWM: --");
-    else snprintf(text, sizeof(text), "%s %u%% / %s %u%%", de ? "Soll" : "Set",
-                  (unsigned)app->backlight_target, de ? "Ist" : "PWM", (unsigned)actual);
+    else snprintf(text, sizeof(text), "%s %u%% / %s %u%%", getLangAlt("Soll", "Set", "设定"),
+                  (unsigned)app->backlight_target, getLangAlt("Ist", "PWM", "实际"), (unsigned)actual);
     mui_canvas_draw_utf8(canvas, 4, 23, text);
     /* Same physical pixels for both PWM levels; LCD contrast stays unchanged. */
     for (uint8_t y = 28; y < 42; ++y)
@@ -65,26 +65,25 @@ static void device_test_light_draw(app_settings_t *app, mui_canvas_t *canvas, bo
     if (app->backlight_error) {
         snprintf(text, sizeof(text), "PWM %08lX", (unsigned long)app->backlight_error);
         mui_canvas_draw_utf8(canvas, 4, 53, text);
-    } else mui_canvas_draw_utf8(canvas, 4, 53, de ? "L: Dunkel  R: Hell" : "L: Dim  R: Bright");
-    device_test_footer(canvas, de);
+    } else mui_canvas_draw_utf8(canvas, 4, 53, getLangAlt("L: Dunkel  R: Hell", "L: Dim  R: Bright", "L:暗  R:亮"));
+    device_test_footer(canvas);
 }
 
 static void device_test_draw(mui_view_t *view, mui_canvas_t *canvas) {
     app_settings_t *app = view->user_data;
-    bool de = getLanguage() == LANGUAGE_DE_DE;
     char text[28];
 
     if (app->device_test_page == 2) {
-        device_test_light_draw(app, canvas, de);
+        device_test_light_draw(app, canvas);
         return;
     }
     mui_canvas_set_font(canvas, MUI_FONT_NORMAL);
     if (app->device_test_page == 1) {
-        mui_canvas_draw_utf8(canvas, 4, 11, de ? "Fernbedienung" : "Remote control");
-        mui_canvas_draw_utf8(canvas, 4, 29, device_test_remote_status(de));
+        mui_canvas_draw_utf8(canvas, 4, 11, getLangAlt("Fernbedienung", "Remote control", "遥控"));
+        mui_canvas_draw_utf8(canvas, 4, 29, device_test_remote_status());
         mui_canvas_set_font(canvas, MUI_FONT_SMALL);
-        mui_canvas_draw_utf8(canvas, 4, 45, de ? "Einstellungen > Remote" : "Settings > Remote");
-        device_test_footer(canvas, de);
+        mui_canvas_draw_utf8(canvas, 4, 45, getLangAlt("Einstellungen > Remote", "Settings > Remote", "设置 > 遥控"));
+        device_test_footer(canvas);
         return;
     }
     mui_canvas_draw_rframe(canvas, 0, 0, 128, 64, 0);
@@ -112,21 +111,22 @@ static void device_test_draw(mui_view_t *view, mui_canvas_t *canvas) {
     snprintf(text, sizeof(text), "ID %.12s", version_get_source_id());
     mui_canvas_draw_utf8(canvas, 4, 23, text);
     int32_t error = runtime_diag_last_vfs_error();
-    const char *status = de ? "VFS: kein Fehler" : "VFS: no error";
+    const char *status = getLangAlt("VFS: kein Fehler", "VFS: no error", "VFS: 无错误");
     if (error) {
         snprintf(text, sizeof(text), "VFS: %ld", (long)error);
         status = text;
     }
     mui_canvas_draw_utf8(canvas, 4, 35, status);
 
-    const char *labels[] = {de ? "Links" : "Left", de ? "Mitte" : "Center", de ? "Rechts" : "Right"};
+    const char *labels[] = {getLangAlt("Links", "Left", "左"), getLangAlt("Mitte", "Center", "中"),
+                            getLangAlt("Rechts", "Right", "右")};
     for (uint8_t k = INPUT_KEY_LEFT; k <= INPUT_KEY_RIGHT; ++k) {
         uint8_t x = 4 + 41 * k;
         mui_canvas_draw_utf8(canvas, x, 47, labels[k]);
         if (app->tested_keys & (1u << k))
             mui_canvas_draw_box(canvas, x, 49, 32, app->held_keys & (1u << k) ? 3 : 1);
     }
-    device_test_footer(canvas, de);
+    device_test_footer(canvas);
 }
 
 static void device_test_input(mui_view_t *view, mui_input_event_t *event) {

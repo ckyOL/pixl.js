@@ -31,7 +31,7 @@ class FigureInfoTests(unittest.TestCase):
             (folder/'db_header.h').write_text('#pragma once\n#include <stdint.h>\ntypedef struct {int placeholder;} db_amiibo_t;\nconst db_amiibo_t *get_amiibo_by_id(uint32_t,uint32_t);\n',encoding='utf-8')
             (folder/'i18n').mkdir()
             shutil.copyfile(SRC/'i18n/string_id.h',folder/'i18n/string_id.h')
-            (folder/'i18n/language.h').write_text('#pragma once\n#include "string_id.h"\nenum {LANGUAGE_DE_DE,LANGUAGE_EN_US};\nint getLanguage(void);\nconst char *getLangString(int);\n#define _T(name) getLangString(_L_ ## name)\n',encoding='utf-8')
+            (folder/'i18n/language.h').write_text('#pragma once\n#include "string_id.h"\nenum {LANGUAGE_DE_DE,LANGUAGE_EN_US};\nint getLanguage(void);\nconst char *getLangString(int);\nint isChineseLanguage(void);const char *getLangAlt(const char*,const char*,const char*);\n#define _T(name) getLangString(_L_ ## name)\n',encoding='utf-8')
             template=Path(__file__).with_name('amiibo_info_render.c.in').read_text(encoding='utf-8')
             replacements={
                 'ACTUAL_ENDIAN_FUNCTION':function((SRC/'amiibo_helper.c').read_text(encoding='utf-8'),'to_little_endian_int32'),

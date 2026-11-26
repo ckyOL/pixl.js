@@ -43,10 +43,13 @@ class StartupAndLanguageTests(unittest.TestCase):
 #include <string.h>
 typedef struct { int canvas; uint8_t screen_width,screen_height; bool auto_update,memory_error; } mui_t;
 typedef int mui_event_t;
-enum { LANGUAGE_DE_DE, LANGUAGE_EN_US };
+enum { LANGUAGE_DE_DE, LANGUAGE_EN_US, LANGUAGE_ZH_HANS };
 static int language, count;
 static const char *lines[2];
 #define getLanguage() (language)
+static const char *getLangAlt(const char *de, const char *en, const char *zh) {
+    return language == LANGUAGE_DE_DE ? de : language == LANGUAGE_ZH_HANS ? zh : en;
+}
 #define mui_canvas_clear(canvas) ((void)0)
 #define mui_nfc_save_draw(m) false
 #define mui_canvas_set_frame(canvas,x,y,w,h) ((void)(w),(void)(h))
@@ -59,9 +62,9 @@ static bool draw_layer(void) { assert(!"emergency view must draw directly"); ret
 #define mui_buffer_flush(m) ((void)0)
 ''' + redraw + r'''
 int main(void) {
-    const char *expected[][2]={{"RAM voll","Mitte: Hauptmenue"},{"Out of RAM","Center: main menu"}};
+    const char *expected[][2]={{"RAM voll","Mitte: Hauptmenue"},{"Out of RAM","Center: main menu"},{"内存不足","中键:主菜单"}};
     mui_t ui={.screen_width=128,.screen_height=64,.auto_update=true,.memory_error=true};
-    for (language=LANGUAGE_DE_DE; language<=LANGUAGE_EN_US; language++) {
+    for (language=LANGUAGE_DE_DE; language<=LANGUAGE_ZH_HANS; language++) {
         count=0;
         mui_process_redraw(&ui,NULL);
         assert(count==2 && !strcmp(lines[0],expected[language][0]) && !strcmp(lines[1],expected[language][1]));

@@ -48,6 +48,7 @@ static unsigned sent_duration;
 static char stored[600],toast[64];
 static unsigned language = LANGUAGE_DE_DE;
 static unsigned getLanguage(void){return language;}
+static const char*getLangAlt(const char*de,const char*en,const char*zh){(void)zh;return getLanguage()==LANGUAGE_DE_DE?de:en;}
 static void*mui(void){return NULL;}
 static void mui_update(void*p){(void)p;}
 static void mui_toast_view_show(void*p,const char*s){(void)p;toasts++;snprintf(toast,sizeof toast,"%s",s);}

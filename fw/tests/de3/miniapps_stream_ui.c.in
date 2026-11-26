@@ -42,7 +42,7 @@ static void ble_nus_abort_transfer(void){aborts++;}
 static void ble_get_addr_str(char*p){strcpy(p,"01:02:03:04:05:06");}
 static bool ble_mode_transition_pending(void){return mode_pending;}
 static bool ble_restart_advertising(void){restarts++;return true;}
-static const char*stream_tr(const char*a,const char*b){(void)b;return a;}
+static const char*stream_tr(const char*a,const char*b,const char*c){(void)b;(void)c;return a;}
 static void mui_canvas_set_draw_color(mui_canvas_t*c,int x){(void)c;(void)x;}
 static void mui_canvas_draw_box(mui_canvas_t*c,int a,int b,int d,int e){(void)c;(void)a;(void)b;(void)d;(void)e;}
 static void mui_canvas_set_font(mui_canvas_t*c,int x){(void)c;(void)x;}

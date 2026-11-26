@@ -53,7 +53,7 @@ const db_amiibo_t *get_amiibo_by_id(uint32_t,uint32_t);
 ''')
             (folder/'i18n').mkdir()
             shutil.copyfile(SRC/'i18n/string_id.h',folder/'i18n/string_id.h')
-            (folder/'i18n/language.h').write_text('#pragma once\n#include "string_id.h"\nenum {LANGUAGE_DE_DE,LANGUAGE_EN_US};\nint getLanguage(void);\nconst char *getLangString(int);\n#define _T(name) getLangString(_L_ ## name)\n')
+            (folder/'i18n/language.h').write_text('#pragma once\n#include "string_id.h"\nenum {LANGUAGE_DE_DE,LANGUAGE_EN_US};\nint getLanguage(void);\nconst char *getLangString(int);\nint isChineseLanguage(void);const char *getLangAlt(const char*,const char*,const char*);\n#define _T(name) getLangString(_L_ ## name)\n')
             u8=FW/'components/u8g2/csrc'
             libs=['u8g2_setup.c','u8g2_font.c','u8g2_hvline.c','u8g2_ll_hvline.c','u8g2_box.c',
                   'u8g2_intersection.c','u8g2_line.c','u8g2_kerning.c','u8x8_8x8.c','u8g2_buffer.c',

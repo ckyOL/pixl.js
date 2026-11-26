@@ -102,6 +102,7 @@ static const char *getLangString(int n){(void)n;return "label";}
 static const char *getLangString(int n){return strings[n];}
 #endif
 static void setLanguage(unsigned n){assert(n<LANGUAGE_COUNT);language_sets++;}
+static const char *getLangAlt(const char *de,const char *en,const char *zh){(void)en;(void)zh;return de;}
 static int nrf_pwr_mgmt_get_timeout(void){return data.sleep_timeout_sec;}
 #define ble_set_standby_timeout nrf_pwr_mgmt_set_timeout
 static void nrf_pwr_mgmt_set_timeout(int n){(void)n;runtime_timeout_sets++;}

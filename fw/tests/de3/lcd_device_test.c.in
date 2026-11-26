@@ -72,6 +72,7 @@ static int32_t error_code;
 static const char *status, *hint, *remote_status;
 static mui_view_t *registered;
 static int getLanguage(void) { return language; }
+static const char *getLangAlt(const char *de, const char *en, const char *zh) { (void)zh; return language == LANGUAGE_DE_DE ? de : en; }
 static const char *version_get_version(void *unused) { (void)unused; return VERSION; }
 static const char *version_get_source_id(void) { return "abcdef0123459876"; }
 static int32_t runtime_diag_last_vfs_error(void) { return error_code; }
